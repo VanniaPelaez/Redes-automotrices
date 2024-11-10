@@ -1,0 +1,53 @@
+#include <Servo.h> // Incluye la librería para controlar servomotores
+
+Servo myServo; // Declara el objeto myServo para controlar un servo
+
+const int led1 = 13; // Declara la constante led1, asignada al pin 13
+const int led2 = 2;  // Declara la constante led2, asignada al pin 2
+const int led3 = 3;  // Declara la constante led3, asignada al pin 3
+const int led4 = 4;  // Declara la constante led4, asignada al pin 4
+char command;        // Declara la variable command para recibir comandos seriales
+
+void setup() {
+  Serial.begin(9600);     // Inicia la comunicación serial a 9600 bps
+  pinMode(led1, OUTPUT);  // Configura el pin led1 como salida
+  pinMode(led2, OUTPUT);  // Configura el pin led2 como salida
+  pinMode(led3, OUTPUT);  // Configura el pin led3 como salida
+  pinMode(led4, OUTPUT);  // Configura el pin led4 como salida
+
+  myServo.attach(9); // Configura el servo para que utilice el pin 9
+}
+
+void loop() {
+  // Verifica si hay datos disponibles en el puerto serial
+  if (Serial.available()) {
+    command = Serial.read(); // Lee el dato serial y lo almacena en command
+
+    // Usa switch para seleccionar la acción basada en el comando recibido
+    switch (command) {
+      case '1': // Si el comando es '1'
+        digitalWrite(led1, !digitalRead(led1)); // Cambia el estado del led1
+        break;
+      case '2': // Si el comando es '2'
+        digitalWrite(led2, !digitalRead(led2)); // Cambia el estado del led2
+        break;
+      case '3': // Si el comando es '3'
+        digitalWrite(led3, !digitalRead(led3)); // Cambia el estado del led3
+        break;
+      case '4': // Si el comando es '4'
+        digitalWrite(led4, !digitalRead(led4)); // Cambia el estado del led4
+        break;
+      case 'm': // Si el comando es 'm'
+        Serial.println("Introduce el ángulo (0 a 180): "); // Pide el ángulo para el servo
+        while (!Serial.available()); //  Espera a que el usuario ingrese un valor
+        int angle = Serial.parseInt(); // Lee el ángulo ingresado como un número entero
+        if (angle >= 0 && angle <= 180) { // Verifica que el ángulo esté en el rango permitido
+          myServo.write(angle); // Mueve el servo al ángulo especificado
+        }
+        break;
+      case 'x': // Si el comando es 'x'
+        Serial.println("Saliendo..."); // Muestra el mensaje "Saliendo..."
+        break;
+    }
+  }
+}
